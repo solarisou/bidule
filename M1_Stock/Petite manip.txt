@@ -1,0 +1,18 @@
+Trouver le dossier du type \mysql-9.3.0-winx64\bin Pour accéder a la BDD
+
+mysql -u root -p 
+
+mdp : 123456  ou ROOT selon l'ordi que j'utilise (modifier le script python pour que le mdp soit le même)
+
+CREATE DATABASE IF NOT EXISTS navalcraft_stock;
+
+exit;
+
+ensuite on lance le script (ici create car il fonctionne) selon le chemin ou il se trouve exemple 
+
+mysql -u netmapper -p navalcraft_stock < D:\M1DSC\Interoperabilite\NavalCraft-main\M1_stock\create.sql
+
+
+et enfin on lance le script d'injection 
+
+python inject_stock_M1.py 
