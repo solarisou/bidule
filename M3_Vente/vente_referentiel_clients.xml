@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<referentiel_clients>
+    <client id="C001">
+        <identite>
+            <nom>GHERRAS</nom>
+            <prenom>Salman Isfahani</prenom>
+        </identite>
+        <contact>
+            <adresse>24 rue de l'université, 42400 Saint-Chamond</adresse>
+            <email>monEmail@email.com</email>
+            <telephone>07000000</telephone>
+        </contact>
+    </client>
+</referentiel_clients>

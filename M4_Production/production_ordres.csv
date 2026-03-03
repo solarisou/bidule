@@ -1,0 +1,4 @@
+num_ordre;num_commande;ref_bateau;date_creation;date_debut_prevue;date_fin_prevue;temps_production_estime_h;temps_production_reel_h;statut
+OF-2026-001;CMD-2026-001;BAT-2026-001;2026-02-02;2026-02-10;2026-04-10;320;0;PLANIFIE
+OF-2026-002;C-2026-015;BAT-2026-002;2026-01-15;2026-01-20;2026-03-20;280;145;EN_COURS
+OF-2026-003;C-2026-010;BAT-2026-003;2025-11-01;2025-11-10;2026-01-10;350;350;TERMINE

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service_vente>
+
+  <!-- ============================================================ -->
+  <!-- M3 - Documents XML : Service Vente                          -->
+  <!-- Projet NavalCraft - Équipe SMS INFORMATIQUE                  -->
+  <!-- GHERRAS Salman • CHERIFI Sarah • ALI ASSOUMANE Mtara        -->
+  <!-- Date : 25 Février 2026                                       -->
+  <!-- ============================================================ -->
+
+  <!-- ===== CLIENTS ===== -->
+
+  <client id="C001">
+    <nom>GHERRAS</nom>
+    <prenom>Salman Isfahani</prenom>
+    <adresse>24 rue de l'universite, 42400 Saint-Chamond</adresse>
+    <email>monEmail@email.com</email>
+    <telephone>07000000</telephone>
+  </client>
+
+  <client id="C002">
+    <nom>ALI</nom>
+    <prenom>Mtara</prenom>
+    <adresse>243 rue Rouget de l'ile, 42000 Saint-Etienne</adresse>
+    <email>mtara@mail.fr</email>
+    <telephone>0607080910</telephone>
+  </client>
+
+  <client id="C003">
+    <nom>CHERIFI</nom>
+    <prenom>Sarah</prenom>
+    <adresse>12 rue de la montat, 69000 Lyon</adresse>
+    <email>sarah@mail.fr</email>
+    <telephone>0607987262</telephone>
+  </client>
+
+  <!-- ===== DEMANDES ===== -->
+
+  <demande id="DEM-2026-001">
+    <id_client>C001</id_client>
+    <date_reception>2026-02-01</date_reception>
+    <type_bateau>Coque Open Aluminium</type_bateau>
+    <statut>ACCEPTEE</statut>
+  </demande>
+
+  <demande id="DEM-2026-002">
+    <id_client>C002</id_client>
+    <date_reception>2026-02-15</date_reception>
+    <type_bateau>Voilier Habitable</type_bateau>
+    <statut>EN_ATTENTE</statut>
+  </demande>
+
+  <demande id="DEM-2026-003">
+    <id_client>C003</id_client>
+    <date_reception>2026-02-20</date_reception>
+    <type_bateau>Bateau de Peche Professionnel</type_bateau>
+    <statut>EN_ETUDE</statut>
+  </demande>
+
+  <!-- ===== DEVIS ===== -->
+
+  <devis id="DEV-2026-001">
+    <id_demande>DEM-2026-001</id_demande>
+    <ref_dossier_etude>DOS-2026-001</ref_dossier_etude>
+    <montant_ht>37500.00</montant_ht>
+    <montant_ttc>45000.00</montant_ttc>
+    <delai_fabrication_jours>60</delai_fabrication_jours>
+    <estimation_matieres>
+      <matiere ref="BOIS-001" quantite="2.5"
+               unite="m3" prix_unitaire="450.00"/>
+      <matiere ref="RES-001"  quantite="10.0"
+               unite="L"  prix_unitaire="25.00"/>
+    </estimation_matieres>
+    <prix_revient_calcule>28500.00</prix_revient_calcule>
+    <date_validite>2026-03-01</date_validite>
+  </devis>
+
+  <!-- ===== COMMANDES ===== -->
+
+  <commande id="CMD-2026-001">
+    <id_devis>DEV-2026-001</id_devis>
+    <id_client>C001</id_client>
+    <date_commande>2026-02-11</date_commande>
+    <date_livraison_prevue>2026-04-15</date_livraison_prevue>
+    <statut>EN_COURS</statut>
+    <montant_total_paye>45000.00</montant_total_paye>
+  </commande>
+
+</service_vente>

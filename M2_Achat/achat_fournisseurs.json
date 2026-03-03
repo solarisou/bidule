@@ -1,0 +1,56 @@
+[
+  {
+    "id_fournisseur": "F001",
+    "nom": "Bois dur",
+    "contact": {
+      "telephone": "0251234567",
+      "email": "contact@boisdur.fr",
+      "adresse": "617 rue Condorcet, 17000 La Rochelle"
+    },
+    "performance": {
+      "delai_livraison_moyen_jours": 14,
+      "pays": "France"
+    },
+    "catalogue_matieres": [
+      {
+        "ref_matiere": "BOIS-001",
+        "nom": "Chene",
+        "prix_unitaire": 450.00,
+        "unite": "m3"
+      },
+      {
+        "ref_matiere": "BOIS-002",
+        "nom": "Contreplaque marine",
+        "prix_unitaire": 180.00,
+        "unite": "m2"
+      }
+    ]
+  },
+  {
+    "id_fournisseur": "F002",
+    "nom": "Resines Pro",
+    "contact": {
+      "telephone": "0442198765",
+      "email": "commandes@resinespro.fr",
+      "adresse": "12 avenue des Industries, 13100 Aix-en-Provence"
+    },
+    "performance": {
+      "delai_livraison_moyen_jours": 10,
+      "pays": "France"
+    },
+    "catalogue_matieres": [
+      {
+        "ref_matiere": "RES-001",
+        "nom": "Resine",
+        "prix_unitaire": 25.00,
+        "unite": "L"
+      },
+      {
+        "ref_matiere": "RES-002",
+        "nom": "Durcisseur epoxy",
+        "prix_unitaire": 18.00,
+        "unite": "L"
+      }
+    ]
+  }
+]

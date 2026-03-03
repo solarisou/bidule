@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- ══════════════════════════════════════════════════
+         Schéma XSD — Référentiel Clients
+    ══════════════════════════════════════════════════ -->
+
+    <xs:element name="referentiel_clients">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="client" type="TypeClient"
+                            minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ── Type : Client ────────────────────────────── -->
+    <xs:complexType name="TypeClient">
+        <xs:sequence>
+            <xs:element name="identite" type="TypeIdentite"/>
+            <xs:element name="contact"  type="TypeContact"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="TypeIdClient" use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Identite ──────────────────────────── -->
+    <xs:complexType name="TypeIdentite">
+        <xs:sequence>
+            <xs:element name="nom"    type="xs:string"/>
+            <xs:element name="prenom" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ── Type : Contact ───────────────────────────── -->
+    <xs:complexType name="TypeContact">
+        <xs:sequence>
+            <xs:element name="adresse"   type="xs:string"/>
+            <xs:element name="email"     type="TypeEmail"/>
+            <xs:element name="telephone" type="TypeTelephone"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ── Types simples contraints ─────────────────── -->
+
+    <!-- ID client : commence par C suivi de chiffres -->
+    <xs:simpleType name="TypeIdClient">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="C[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Email classique -->
+    <xs:simpleType name="TypeEmail">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[^@]+@[^@]+\.[^@]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Téléphone : chiffres uniquement-->
+    <xs:simpleType name="TypeTelephone">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{7,15}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

@@ -1,0 +1,36 @@
+[
+  {
+    "num_demande": "INFO-2026-001",
+    "service_demandeur": "Vente",
+    "date_demande": "2026-01-15",
+    "objet": "Consultation pour Devis DEV-2026-001",
+    "matieres_recherchees": ["BOIS-001", "RES-001"],
+    "reponse": {
+      "date_reponse": "2026-01-17",
+      "fournisseurs_consultes": ["F001", "F002"],
+      "cout_total_estime_ht": 11750.00,
+      "delai_max_approvisionnement_jours": 14
+    }
+  },
+  {
+    "num_demande": "INFO-2026-002",
+    "service_demandeur": "Production",
+    "date_demande": "2026-02-05",
+    "objet": "Verification disponibilite matieres pour OF-2026-001",
+    "matieres_recherchees": ["BOIS-001", "RES-001"],
+    "reponse": {
+      "date_reponse": "2026-02-07",
+      "fournisseurs_consultes": ["F001", "F002"],
+      "cout_total_estime_ht": 3625.00,
+      "delai_max_approvisionnement_jours": 14
+    }
+  },
+  {
+    "num_demande": "INFO-2026-088",
+    "service_demandeur": "Vente",
+    "date_demande": "2026-02-20",
+    "objet": "Consultation pour Devis DEV-2026-002",
+    "matieres_recherchees": ["ALU-001", "RES-001"],
+    "reponse": null
+  }
+]

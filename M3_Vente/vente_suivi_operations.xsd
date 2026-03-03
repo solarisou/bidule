@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- ══════════════════════════════════════════════════
+         Schéma XSD — Suivi des Opérations
+    ══════════════════════════════════════════════════ -->
+
+    <!-- Élément racine -->
+    <xs:element name="suivi_operations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="dossier" type="TypeDossier"
+                            minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ── Type : Dossier ───────────────────────────── -->
+    <xs:complexType name="TypeDossier">
+        <xs:sequence>
+            <xs:element name="demande"  type="TypeDemande"/>
+            <xs:element name="devis"    type="TypeDevis"/>
+            <xs:element name="commande" type="TypeCommande"/>
+        </xs:sequence>
+        <!-- client_ref : lien vers referentiel_clients.xml -->
+        <xs:attribute name="client_ref" type="TypeIdClient" use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Demande ───────────────────────────── -->
+    <xs:complexType name="TypeDemande">
+        <xs:sequence>
+            <xs:element name="date_reception" type="xs:date"/>
+            <xs:element name="type_bateau"    type="xs:string"/>
+            <xs:element name="statut"         type="TypeStatutDemande"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="TypeIdDemande" use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Devis ─────────────────────────────── -->
+    <xs:complexType name="TypeDevis">
+        <xs:sequence>
+            <xs:element name="details_financiers" type="TypeDetailsFinanciers"/>
+            <xs:element name="logistique"         type="TypeLogistique"/>
+            <xs:element name="estimation_matieres" type="TypeEstimationMatieres"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="TypeIdDevis" use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Détails financiers ────────────────── -->
+    <xs:complexType name="TypeDetailsFinanciers">
+        <xs:attribute name="ht"          type="TypeMontant" use="required"/>
+        <xs:attribute name="ttc"         type="TypeMontant" use="required"/>
+        <xs:attribute name="prix_revient" type="TypeMontant" use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Logistique ────────────────────────── -->
+    <xs:complexType name="TypeLogistique">
+        <xs:attribute name="delai"    type="xs:positiveInteger" use="required"/>
+        <xs:attribute name="validite" type="xs:date"            use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Estimation matières ──────────────── -->
+    <xs:complexType name="TypeEstimationMatieres">
+        <xs:sequence>
+            <xs:element name="matiere" type="TypeMatiere"
+                        minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ── Type : Matière (lien inter-service M1) ───── -->
+    <xs:complexType name="TypeMatiere">
+        <xs:attribute name="ref"          type="TypeRefMatiere" use="required"/>
+        <xs:attribute name="quantite"     type="xs:decimal"     use="required"/>
+        <xs:attribute name="unite"        type="xs:string"      use="required"/>
+        <xs:attribute name="prix_unitaire" type="TypeMontant"   use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Commande ──────────────────────────── -->
+    <xs:complexType name="TypeCommande">
+        <xs:sequence>
+            <xs:element name="date_commande"    type="xs:date"/>
+            <xs:element name="livraison_prevue" type="xs:date"/>
+            <xs:element name="statut"           type="TypeStatutCommande"/>
+            <xs:element name="reglement"        type="TypeReglement"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="TypeIdCommande" use="required"/>
+    </xs:complexType>
+
+    <!-- ── Type : Règlement ─────────────────────────── -->
+    <xs:complexType name="TypeReglement">
+        <xs:attribute name="montant" type="TypeMontant" use="required"/>
+    </xs:complexType>
+
+    <!-- ════════════════════════════════════════════════
+         TYPES SIMPLES CONTRAINTS
+    ════════════════════════════════════════════════ -->
+
+    <!-- IDs -->
+    <xs:simpleType name="TypeIdClient">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="C[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TypeIdDemande">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="DEM-[0-9]{4}-[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TypeIdDevis">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="DEV-[0-9]{4}-[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TypeIdCommande">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="CMD-[0-9]{4}-[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Référence matière (ex: BOIS-001, RES-001) -->
+    <xs:simpleType name="TypeRefMatiere">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z]+-[0-9]{3}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Montant positif à 2 décimales -->
+    <xs:simpleType name="TypeMontant">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0"/>
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Statuts -->
+    <xs:simpleType name="TypeStatutDemande">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EN_ATTENTE"/>
+            <xs:enumeration value="ACCEPTEE"/>
+            <xs:enumeration value="REFUSEE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TypeStatutCommande">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EN_COURS"/>
+            <xs:enumeration value="LIVREE"/>
+            <xs:enumeration value="ANNULEE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

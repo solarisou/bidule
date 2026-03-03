@@ -1,0 +1,59 @@
+[
+  {
+    "num_bon_commande": "BC-2026-001",
+    "date_commande": "2026-01-20",
+    "id_fournisseur": "F001",
+    "statut": "LIVREE",
+    "details_articles": [
+      {
+        "ref_matiere": "BOIS-001",
+        "quantite_commandee": 15.0,
+        "prix_unitaire_achat": 450.00
+      }
+    ],
+    "montant_total_ht": 6750.00,
+    "montant_total_ttc": 8100.00,
+    "date_livraison_prevue": "2026-02-03",
+    "date_livraison_effective": "2026-02-02",
+    "num_bon_livraison": "ENT-2026-001",
+    "commande_client_associee": "C-2026-015"
+  },
+  {
+    "num_bon_commande": "BC-2026-002",
+    "date_commande": "2026-01-25",
+    "id_fournisseur": "F002",
+    "statut": "LIVREE",
+    "details_articles": [
+      {
+        "ref_matiere": "RES-001",
+        "quantite_commandee": 300.0,
+        "prix_unitaire_achat": 25.00
+      }
+    ],
+    "montant_total_ht": 7500.00,
+    "montant_total_ttc": 9000.00,
+    "date_livraison_prevue": "2026-02-05",
+    "date_livraison_effective": "2026-02-04",
+    "num_bon_livraison": "ENT-2026-002",
+    "commande_client_associee": "CMD-2026-001"
+  },
+  {
+    "num_bon_commande": "BC-2026-003",
+    "date_commande": "2026-02-20",
+    "id_fournisseur": "F001",
+    "statut": "EN_COURS",
+    "details_articles": [
+      {
+        "ref_matiere": "BOIS-001",
+        "quantite_commandee": 20.0,
+        "prix_unitaire_achat": 450.00
+      }
+    ],
+    "montant_total_ht": 9000.00,
+    "montant_total_ttc": 10800.00,
+    "date_livraison_prevue": "2026-03-10",
+    "date_livraison_effective": null,
+    "num_bon_livraison": null,
+    "commande_client_associee": "C-2026-022"
+  }
+]

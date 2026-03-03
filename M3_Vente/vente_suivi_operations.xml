@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suivi_operations>
+    <dossier client_ref="C001">
+        <demande id="DEM-2026-001">
+            <date_reception>2026-02-01</date_reception>
+            <type_bateau>Coque Open Aluminium</type_bateau>
+            <statut>ACCEPTEE</statut>
+        </demande>
+        <devis id="DEV-2026-001">
+            <details_financiers ht="37500.00" ttc="45000.00" prix_revient="28500.00"/>
+            <logistique delai="60" validite="2026-03-01"/>
+            <estimation_matieres>
+                <matiere ref="BOIS-001" quantite="2.5" unite="m3" prix_unitaire="450.00"/>
+                <matiere ref="RES-001" quantite="10.0" unite="L" prix_unitaire="25.00"/>
+            </estimation_matieres>
+        </devis>
+        <commande id="CMD-2026-001">
+            <date_commande>2026-02-11</date_commande>
+            <livraison_prevue>2026-04-15</livraison_prevue>
+            <statut>EN_COURS</statut>
+            <reglement montant="45000.00"/>
+        </commande>
+    </dossier>
+</suivi_operations>
