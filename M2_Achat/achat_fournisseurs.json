@@ -52,5 +52,92 @@
         "unite": "L"
       }
     ]
+  },
+  {
+    "id_fournisseur": "F003",
+    "nom": "MetalMarine",
+    "contact": {
+      "telephone": "0556789012",
+      "email": "contact@metalmarine.fr",
+      "adresse": "5 zone industrielle du Lac, 33520 Bruges"
+    },
+    "performance": {
+      "delai_livraison_moyen_jours": 21,
+      "pays": "France"
+    },
+    "catalogue_matieres": [
+      {
+        "ref_matiere": "ALU-001",
+        "nom": "Aluminium 5083",
+        "prix_unitaire": 120.00,
+        "unite": "m2"
+      },
+      {
+        "ref_matiere": "PEI-001",
+        "nom": "Antifouling marine",
+        "prix_unitaire": 35.00,
+        "unite": "L"
+      },
+      {
+        "ref_matiere": "ETR-001",
+        "nom": "Profile acier etraves",
+        "prix_unitaire": 95.00,
+        "unite": "m"
+      }
+    ]
+  },
+  {
+    "id_fournisseur": "F004",
+    "nom": "Inox Marine",
+    "contact": {
+      "telephone": "0298456123",
+      "email": "ventes@inoxmarine.fr",
+      "adresse": "3 rue de la Corniche, 29200 Brest"
+    },
+    "performance": {
+      "delai_livraison_moyen_jours": 5,
+      "pays": "France"
+    },
+    "catalogue_matieres": [
+      {
+        "ref_matiere": "VIS-001",
+        "nom": "Visserie inox marine",
+        "prix_unitaire": 0.80,
+        "unite": "piece"
+      },
+      {
+        "ref_matiere": "FIL-001",
+        "nom": "Filin acier galvanise",
+        "prix_unitaire": 42.00,
+        "unite": "bobine"
+      }
+    ]
+  },
+  {
+    "id_fournisseur": "F005",
+    "nom": "Composite Plus",
+    "contact": {
+      "telephone": "0467891234",
+      "email": "contact@compositeplus.fr",
+      "adresse": "22 avenue du Technopole, 34000 Montpellier"
+    },
+    "performance": {
+      "delai_livraison_moyen_jours": 21,
+      "pays": "France"
+    },
+    "catalogue_matieres": [
+      {
+        "ref_matiere": "CAR-001",
+        "nom": "Tissu fibre carbone",
+        "prix_unitaire": 320.00,
+        "unite": "m2"
+      },
+      {
+        "ref_matiere": "MAS-001",
+        "nom": "Mastic etancheite",
+        "prix_unitaire": 15.00,
+        "unite": "L"
+      }
+    ]
   }
 ]

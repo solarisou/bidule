@@ -1,37 +1,3 @@
-"""
-╔══════════════════════════════════════════════════════════════╗
-║   Injection M1 - Service STOCK (MySQL) → Base E (Neo4j)     ║
-║   Projet NavalCraft - Équipe DeeDeeDoc                       ║
-║   Responsable STOCK : Sola                                   ║
-╚══════════════════════════════════════════════════════════════╝
-
-COMMENT ÇA MARCHE — NEO4J EN 30 SECONDES
-─────────────────────────────────────────
-Neo4j est une base de données en GRAPHE. Au lieu de tables,
-on a des NŒUDS (cercles) reliés par des RELATIONS (flèches).
-
-Exemple de ce qu'on va créer :
-
-  (Categorie:Bois)
-        ↑  APPARTIENT_A
-  (MatierePremiere:BOIS-001)  ──STOCKEE_EN──►  (Emplacement:2B-01)
-        ↑  CONCERNE
-  (MouvementStock:ENTREE 15m3)
-
-Le langage utilisé pour écrire dans Neo4j s'appelle CYPHER.
-Les deux commandes principales qu'on utilise ici :
-
-  • MERGE (x:Label {id: $id})  →  Crée le nœud s'il n'existe pas,
-                                  sinon le retrouve (pas de doublons)
-  • SET x.propriete = $valeur  →  Ajoute/modifie une propriété
-
-DÉPENDANCES À INSTALLER :
-  pip install mysql-connector-python neo4j
-
-LANCER LE PROGRAMME :
-  python inject_stock_M1.py
-"""
-
 import sys
 import mysql.connector
 from neo4j import GraphDatabase
@@ -44,13 +10,13 @@ from neo4j import GraphDatabase
 MYSQL_CONFIG = {
     "host":     "localhost",
     "user":     "root",
-    "password": "123456",        # ← changer ici
+    "password": "123456",        # ← changer ici selon le mdp défini dans mysqlconnector
     "database": "navalcraft_stock",
 }
 
 NEO4J_URI      = "bolt://localhost:7687"
 NEO4J_USER     = "neo4j"
-NEO4J_PASSWORD = "12345678"        # ← changer ici
+NEO4J_PASSWORD = "Password"        # ← changer ici selon le mdp défini dans neo4j
 
 
 # ══════════════════════════════════════════════════════════════

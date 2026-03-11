@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <title>NavalCraft – Vente</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <style>
+        body { background: #f0f4f8; }
+        .tbl-sort { cursor:pointer; user-select:none; white-space:nowrap; }
+        .tbl-sort .si { font-size:.75rem; opacity:.5; margin-left:4px; }
+        .tbl-sort.asc .si::after  { content:'↑'; opacity:1; }
+        .tbl-sort.desc .si::after { content:'↓'; opacity:1; }
+        .tbl-sort:not(.asc):not(.desc) .si::after { content:'⇅'; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container-fluid py-4">
+    <h2 class="fw-bold mb-1">M3 — Service Vente</h2>
+    <p class="text-muted mb-4">Clients et commandes</p>
+
+    <!-- Clients -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-bold" style="background:#f3e5f5;">Clients</div>
+        <div class="card-body">
+            <div id="ctrl-clients"></div>
+            <table id="tbl-clients" class="table table-hover table-sm w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="tbl-sort">ID<span class="si"></span></th>
+                        <th class="tbl-sort">Nom<span class="si"></span></th>
+                        <th class="tbl-sort">Prénom<span class="si"></span></th>
+                        <th class="tbl-sort">Email<span class="si"></span></th>
+                        <th class="tbl-sort">Téléphone<span class="si"></span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${clients}">
+                        <td th:text="${c['id']}"></td>
+                        <td th:text="${c['nom']}"></td>
+                        <td th:text="${c['prenom']}"></td>
+                        <td th:text="${c['email']}"></td>
+                        <td th:text="${c['telephone']}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="pag-clients"></div>
+        </div>
+    </div>
+
+    <!-- Commandes -->
+    <div class="card shadow-sm">
+        <div class="card-header fw-bold d-flex justify-content-between align-items-center" style="background:#f3e5f5;">
+            <span>Commandes</span>
+            <small class="text-muted fw-normal">1 000 plus récentes sur 3 000</small>
+        </div>
+        <div class="card-body">
+            <div id="ctrl-commandes"></div>
+            <table id="tbl-commandes" class="table table-hover table-sm w-100">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="tbl-sort">ID<span class="si"></span></th>
+                        <th class="tbl-sort">Statut<span class="si"></span></th>
+                        <th class="tbl-sort">Date commande<span class="si"></span></th>
+                        <th class="tbl-sort">Livraison prévue<span class="si"></span></th>
+                        <th class="tbl-sort">Montant (€)<span class="si"></span></th>
+                        <th class="tbl-sort">Client<span class="si"></span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cmd : ${commandes}">
+                        <td th:text="${cmd['id']}"></td>
+                        <td>
+                            <span th:text="${cmd['statut']}"
+                                  th:class="${cmd['statut'] == 'LIVREE'   ? 'badge bg-success' :
+                                             cmd['statut'] == 'EN_COURS' ? 'badge bg-warning text-dark' :
+                                             'badge bg-secondary'}"></span>
+                        </td>
+                        <td th:text="${cmd['date_commande']}"></td>
+                        <td th:text="${cmd['date_livraison']}"></td>
+                        <td th:text="${cmd['montant']}"></td>
+                        <td th:text="${cmd['client']}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="pag-commandes"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function TableManager(cfg) {
+    var tbl=document.getElementById(cfg.tableId),ctrlEl=document.getElementById(cfg.ctrlId),pagEl=document.getElementById(cfg.pagId);
+    if(!tbl||!ctrlEl||!pagEl)return;
+    var tbody=tbl.querySelector('tbody'),allRows=Array.from(tbody.querySelectorAll('tr')),filtered=allRows.slice();
+    var page=1,pageSize=cfg.pageSize||25,sortCol=cfg.sortCol!==undefined?cfg.sortCol:0,sortDir=cfg.sortDir||'asc';
+
+    ctrlEl.innerHTML='<div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">'
+      +'<div class="d-flex align-items-center gap-2"><span class="text-muted small">Afficher</span>'
+      +'<select id="ps-'+cfg.tableId+'" class="form-select form-select-sm" style="width:80px">'
+      +'<option value="10">10</option><option value="25" selected>25</option>'
+      +'<option value="50">50</option><option value="100">100</option><option value="-1">Tous</option></select>'
+      +'<span class="text-muted small">entrées</span></div>'
+      +'<input type="text" id="sq-'+cfg.tableId+'" class="form-control form-control-sm"'
+      +' placeholder="🔍 Recherche globale..." style="max-width:260px"></div>';
+
+    document.getElementById('ps-'+cfg.tableId).addEventListener('change',function(){pageSize=parseInt(this.value);page=1;render();});
+    document.getElementById('sq-'+cfg.tableId).addEventListener('input',function(){page=1;filterRender();});
+
+    var ths=tbl.querySelectorAll('thead .tbl-sort');
+    ths.forEach(function(th,i){
+        th.addEventListener('click',function(){
+            if(sortCol===i)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=i;sortDir='asc';}
+            ths.forEach(function(t){t.classList.remove('asc','desc');});th.classList.add(sortDir);page=1;filterRender();
+        });
+    });
+    if(ths[sortCol])ths[sortCol].classList.add(sortDir);
+
+    function cellText(r,c){return r.cells[c]?r.cells[c].textContent.trim():'';}
+    function filterRender(){
+        var q=document.getElementById('sq-'+cfg.tableId).value.toLowerCase();
+        filtered=allRows.filter(function(r){return!q||r.textContent.toLowerCase().includes(q);});
+        filtered.sort(function(a,b){
+            var va=cellText(a,sortCol),vb=cellText(b,sortCol),na=parseFloat(va),nb=parseFloat(vb);
+            var c=(!isNaN(na)&&!isNaN(nb))?na-nb:va.localeCompare(vb,'fr');
+            return sortDir==='asc'?c:-c;
+        });render();
+    }
+    function render(){
+        var total=filtered.length,ps=pageSize===-1?total:pageSize,tp=Math.max(1,ps>0?Math.ceil(total/ps):1);
+        page=Math.min(Math.max(1,page),tp);
+        var from=(page-1)*(pageSize===-1?total:ps),to=pageSize===-1?total:Math.min(from+ps,total);
+        allRows.forEach(function(r){r.style.display='none';});
+        filtered.forEach(function(r,i){r.style.display=(i>=from&&i<to)?'':'none';tbody.appendChild(r);});
+        renderPag(from+(total>0?1:0),to,total,tp);
+    }
+    function renderPag(from,to,total,tp){
+        var info='<span class="text-muted small">Affichage de '+(total?from:0)+' à '+to+' sur '+total+' entrées</span>';
+        var btns='<ul class="pagination pagination-sm mb-0">';
+        btns+=li(page-1,'‹',page===1);
+        var lo=Math.max(1,page-2),hi=Math.min(tp,page+2);
+        if(lo>1){btns+=li(1,'1');if(lo>2)btns+='<li class="page-item disabled"><span class="page-link">…</span></li>';}
+        for(var p=lo;p<=hi;p++)btns+=li(p,p,false,p===page);
+        if(hi<tp){if(hi<tp-1)btns+='<li class="page-item disabled"><span class="page-link">…</span></li>';btns+=li(tp,tp);}
+        btns+=li(page+1,'›',page===tp)+'</ul>';
+        pagEl.innerHTML='<div class="d-flex justify-content-between align-items-center mt-2 flex-wrap gap-2">'+info+'<nav>'+btns+'</nav></div>';
+        pagEl.querySelectorAll('[data-p]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();page=parseInt(this.dataset.p);render();});});
+    }
+    function li(p,label,disabled,active){
+        if(disabled)return'<li class="page-item disabled"><span class="page-link">'+label+'</span></li>';
+        if(active)return'<li class="page-item active"><span class="page-link">'+label+'</span></li>';
+        return'<li class="page-item"><a class="page-link" href="#" data-p="'+p+'">'+label+'</a></li>';
+    }
+    filterRender();
+}
+TableManager({tableId:'tbl-clients',   ctrlId:'ctrl-clients',   pagId:'pag-clients',   sortCol:0,sortDir:'asc'});
+TableManager({tableId:'tbl-commandes', ctrlId:'ctrl-commandes', pagId:'pag-commandes', sortCol:2,sortDir:'desc'});
+</script>
+</body>
+</html>

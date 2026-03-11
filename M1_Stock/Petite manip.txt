@@ -1,3 +1,6 @@
+pip install mysql-connector-python neo4j
+
+
 Trouver le dossier du type \mysql-9.3.0-winx64\bin Pour accéder a la BDD
 
 mysql -u root -p 

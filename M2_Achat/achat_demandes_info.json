@@ -32,5 +32,31 @@
     "objet": "Consultation pour Devis DEV-2026-002",
     "matieres_recherchees": ["ALU-001", "RES-001"],
     "reponse": null
+  },
+  {
+    "num_demande": "INFO-2026-003",
+    "service_demandeur": "Production",
+    "date_demande": "2026-02-10",
+    "objet": "Disponibilite CAR-001 et FIL-001 pour OF-2026-004",
+    "matieres_recherchees": ["CAR-001", "FIL-001"],
+    "reponse": {
+      "date_reponse": "2026-02-12",
+      "fournisseurs_consultes": ["F004", "F005"],
+      "cout_total_estime_ht": 8500.00,
+      "delai_max_approvisionnement_jours": 21
+    }
+  },
+  {
+    "num_demande": "INFO-2026-004",
+    "service_demandeur": "Vente",
+    "date_demande": "2026-03-01",
+    "objet": "Estimation prix ALU-001 et VIS-001 pour nouveau projet",
+    "matieres_recherchees": ["ALU-001", "VIS-001"],
+    "reponse": {
+      "date_reponse": "2026-03-03",
+      "fournisseurs_consultes": ["F003", "F004"],
+      "cout_total_estime_ht": 4080.00,
+      "delai_max_approvisionnement_jours": 14
+    }
   }
 ]

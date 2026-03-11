@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark" style="background-color:#0d1b2a;">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">
+            NavalCraft
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'dashboard' ? 'active' : ''}" href="/">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'stock' ? 'active' : ''}" href="/stock">
+                        Stock
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'achat' ? 'active' : ''}" href="/achat">
+                        Achat
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'vente' ? 'active' : ''}" href="/vente">
+                        Vente
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'production' ? 'active' : ''}" href="/production">
+                        Production
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${currentPage == 'tracabilite' ? 'active' : ''}" href="/tracabilite">
+                        Tracabilite
+                    </a>
+                </li>
+            </ul>
+            <span class="navbar-text text-secondary small">Neo4j · navalcraft</span>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

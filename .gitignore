@@ -4,3 +4,15 @@
 # Fichiers système
 .DS_Store
 Thumbs.db
+
+# Maven build output
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Claude internal
+.claude/

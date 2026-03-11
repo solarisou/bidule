@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <title>NavalCraft Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        body { background:#f0f4f8; }
+        .kpi-card { border-left: 4px solid; border-radius: 8px; }
+        .kpi-matieres  { border-color: #00b4d8; }
+        .kpi-fournisseurs { border-color: #ff9800; }
+        .kpi-clients   { border-color: #9c27b0; }
+        .kpi-commandes { border-color: #e91e63; }
+        .kpi-ordres    { border-color: #4caf50; }
+        .kpi-alertes   { border-color: #f44336; }
+        .kpi-number { font-size: 2.5rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4">
+    <h1 class="mb-1 fw-bold">Dashboard NavalCraft</h1>
+    <p class="text-muted mb-4">Vue consolidée des 4 services — source : Neo4j <code>navalcraft</code></p>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card kpi-card kpi-matieres h-100 shadow-sm p-3">
+                <div class="text-muted small">Matières premières</div>
+                <div class="kpi-number text-info" th:text="${kpis.nbMatieres()}">0</div>
+                <div class="text-muted small">M1 Stock</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card kpi-card kpi-fournisseurs h-100 shadow-sm p-3">
+                <div class="text-muted small">Fournisseurs</div>
+                <div class="kpi-number text-warning" th:text="${kpis.nbFournisseurs()}">0</div>
+                <div class="text-muted small">M2 Achat</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card kpi-card kpi-clients h-100 shadow-sm p-3">
+                <div class="text-muted small">Clients</div>
+                <div class="kpi-number" style="color:#9c27b0;" th:text="${kpis.nbClients()}">0</div>
+                <div class="text-muted small">M3 Vente</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card kpi-card kpi-commandes h-100 shadow-sm p-3">
+                <div class="text-muted small">Commandes</div>
+                <div class="kpi-number text-danger" th:text="${kpis.nbCommandes()}">0</div>
+                <div class="text-muted small">M3 Vente</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card kpi-card kpi-ordres h-100 shadow-sm p-3">
+                <div class="text-muted small">Ordres fabrication</div>
+                <div class="kpi-number text-success" th:text="${kpis.nbOrdres()}">0</div>
+                <div class="text-muted small">M4 Production</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl-2">
+            <div class="card kpi-card kpi-alertes h-100 shadow-sm p-3">
+                <div class="text-muted small">Alertes stock</div>
+                <div class="kpi-number text-danger" th:text="${kpis.nbAlertes()}">0</div>
+                <div class="text-muted small">M1 Stock</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h5 class="mb-3">Commandes par statut</h5>
+                <canvas id="chartCommandes" height="250"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3">
+                <h5 class="mb-3">Ordres de fabrication par statut</h5>
+                <canvas id="chartOrdres" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    const statutsCommandes = /*[[${kpis.statutsCommandes()}]]*/ [];
+    const countCommandes   = /*[[${kpis.countCommandes()}]]*/ [];
+    const statutsOrdres    = /*[[${kpis.statutsOrdres()}]]*/ [];
+    const countOrdres      = /*[[${kpis.countOrdres()}]]*/ [];
+
+    const COLORS = ['#e91e63','#ff9800','#4caf50','#2196f3','#9c27b0','#00bcd4'];
+
+    new Chart(document.getElementById('chartCommandes'), {
+        type: 'doughnut',
+        data: {
+            labels: statutsCommandes,
+            datasets: [{ data: countCommandes, backgroundColor: COLORS }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('chartOrdres'), {
+        type: 'bar',
+        data: {
+            labels: statutsOrdres,
+            datasets: [{
+                label: 'Nombre',
+                data: countOrdres,
+                backgroundColor: ['#4caf50','#ff9800','#2196f3','#e91e63']
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+</script>
+</body>
+</html>

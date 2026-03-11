@@ -3,115 +3,123 @@ Injection M4 - Service Production → Neo4j
 Responsable : SG
 Lit les 2 fichiers CSV et injecte les nœuds OrdreFabrication,
 Bateau et les relations dans Neo4j.
+Mode BATCH (UNWIND) — supporte les très grands volumes.
 """
 
 import csv
+import os
 from neo4j import GraphDatabase
 
 # ─────────────────────────────────────────
 # CONFIGURATION
 # ─────────────────────────────────────────
-NEO4J_URI      = "bolt://localhost:7687"
+NEO4J_URI      = "bolt://127.0.0.1:7687"
 NEO4J_USER     = "neo4j"
-NEO4J_PASSWORD = "password"   # à changer
+NEO4J_PASSWORD = "Password"
 
-CSV_ORDRES         = "../production_ordres.csv"
-CSV_NOMENCLATURES  = "../production_nomenclatures.csv"
+_DIR              = os.path.dirname(os.path.abspath(__file__))
+CSV_ORDRES        = os.path.join(_DIR, "..", "production_ordres.csv")
+CSV_NOMENCLATURES = os.path.join(_DIR, "..", "production_nomenclatures.csv")
+
+BATCH = 500
 
 # ─────────────────────────────────────────
-# CONNEXION
+# UTILITAIRES
 # ─────────────────────────────────────────
-driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def create_indexes(session):
+    for q in [
+        "CREATE INDEX of_id  IF NOT EXISTS FOR (n:OrdreFabrication) ON (n.id)",
+        "CREATE INDEX bat_ref IF NOT EXISTS FOR (n:Bateau)           ON (n.ref)",
+        "CREATE INDEX cmd_id  IF NOT EXISTS FOR (n:Commande)         ON (n.id)",
+        "CREATE INDEX mp_code IF NOT EXISTS FOR (n:MatierePremiere)  ON (n.code)",
+    ]:
+        session.run(q)
 
 
 # ══════════════════════════════════════════
-# FICHIER 1 — production_ordres.csv
+# FICHIER 1 — production_ordres.csv  (BATCH)
 # ══════════════════════════════════════════
-def inject_ordres(tx, rows):
-    for row in rows:
-        # Nœud Bateau
-        tx.run("""
-            MERGE (b:Bateau {ref: $ref})
-            SET b.service = 'Production'
-        """, ref=row["ref_bateau"])
+def inject_ordres(session, rows):
+    total = len(rows)
+    print(f"  {total} ordres à injecter...")
 
-        # Nœud OrdreFabrication
-        tx.run("""
-            MERGE (of:OrdreFabrication {id: $id})
-            SET of.date_creation              = $date_creation,
-                of.date_debut_prevue          = $date_debut,
-                of.date_fin_prevue            = $date_fin,
-                of.temps_production_estime_h  = toFloat($tps_estime),
-                of.temps_production_reel_h    = toFloat($tps_reel),
-                of.statut                     = $statut,
-                of.service                    = 'Production'
-        """,
-            id           = row["num_ordre"],
-            date_creation= row["date_creation"],
-            date_debut   = row["date_debut_prevue"],
-            date_fin     = row["date_fin_prevue"],
-            tps_estime   = row["temps_production_estime_h"],
-            tps_reel     = row["temps_production_reel_h"],
-            statut       = row["statut"],
-        )
+    for idx, batch in enumerate(chunks(rows, BATCH)):
+        data = [{
+            "id":           row["num_ordre"],
+            "cmd":          row["num_commande"],
+            "bat":          row["ref_bateau"],
+            "date_creation": row["date_creation"],
+            "date_debut":   row["date_debut_prevue"],
+            "date_fin":     row["date_fin_prevue"],
+            "tps_estime":   float(row["temps_production_estime_h"]),
+            "tps_reel":     float(row["temps_production_reel_h"]),
+            "statut":       row["statut"],
+        } for row in batch]
 
-        # Lien OrdreFabrication → Bateau
-        tx.run("""
-            MATCH (of:OrdreFabrication {id:  $id_of})
-            MATCH (b:Bateau            {ref: $ref_b})
-            MERGE (of)-[:PRODUIT]->(b)
-        """,
-            id_of = row["num_ordre"],
-            ref_b = row["ref_bateau"],
-        )
+        def writer(tx, d=data):
+            tx.run("""
+                UNWIND $rows AS row
+                MERGE (b:Bateau {ref: row.bat})
+                SET b.service = 'Production'
+                MERGE (of:OrdreFabrication {id: row.id})
+                SET of.date_creation             = row.date_creation,
+                    of.date_debut_prevue         = row.date_debut,
+                    of.date_fin_prevue           = row.date_fin,
+                    of.temps_production_estime_h = row.tps_estime,
+                    of.temps_production_reel_h   = row.tps_reel,
+                    of.statut                    = row.statut,
+                    of.service                   = 'Production'
+                MERGE (of)-[:PRODUIT]->(b)
+                WITH of, row
+                MERGE (cmd:Commande {id: row.cmd})
+                ON CREATE SET cmd.note = 'Référencé depuis Production'
+                MERGE (cmd)-[:DECLENCHE]->(of)
+            """, rows=d)
 
-        # Lien inter-service : OrdreFabrication → Commande (M3 Vente)
-        # num_commande est la clé de liaison
-        tx.run("""
-            MERGE (cmd:Commande {id: $id_cmd})
-            ON CREATE SET cmd.note = 'Référencé depuis Production'
-        """, id_cmd=row["num_commande"])
+        session.execute_write(writer)
+        print(f"  [{min((idx+1)*BATCH, total):>6}/{total}]", end="\r", flush=True)
 
-        tx.run("""
-            MATCH (cmd:Commande        {id: $id_cmd})
-            MATCH (of:OrdreFabrication {id: $id_of})
-            MERGE (cmd)-[:DECLENCHE]->(of)
-        """,
-            id_cmd = row["num_commande"],
-            id_of  = row["num_ordre"],
-        )
-
-        print(f"  Ordre injecté : {row['num_ordre']} ({row['statut']}) → {row['ref_bateau']}")
+    print(f"  [{total:>6}/{total}] ✓")
 
 
 # ══════════════════════════════════════════
-# FICHIER 2 — production_nomenclatures.csv
+# FICHIER 2 — production_nomenclatures.csv  (BATCH)
 # ══════════════════════════════════════════
-def inject_nomenclatures(tx, rows):
-    for row in rows:
-        # Le nœud MatierePremiere existe déjà (inject_stock.py)
-        tx.run("""
-            MERGE (m:MatierePremiere {code: $code})
-            ON CREATE SET m.note = 'Référencé depuis Production'
-        """, code=row["ref_matiere"])
+def inject_nomenclatures(session, rows):
+    total = len(rows)
+    print(f"  {total} nomenclatures à injecter...")
 
-        # Lien inter-service : OrdreFabrication → MatierePremiere (M1 Stock)
-        tx.run("""
-            MATCH (of:OrdreFabrication {id:   $id_of})
-            MATCH (m:MatierePremiere   {code: $code})
-            MERGE (of)-[r:NECESSITE]->(m)
-            SET r.quantite_prevue   = toFloat($qte_prevue),
-                r.quantite_utilisee = toFloat($qte_utilisee),
-                r.unite             = $unite
-        """,
-            id_of        = row["num_ordre"],
-            code         = row["ref_matiere"],
-            qte_prevue   = row["quantite_prevue"],
-            qte_utilisee = row["quantite_utilisee"],
-            unite        = row["unite"],
-        )
+    for idx, batch in enumerate(chunks(rows, BATCH)):
+        data = [{
+            "of_id":        row["num_ordre"],
+            "code":         row["ref_matiere"],
+            "qte_prevue":   float(row["quantite_prevue"]),
+            "qte_utilisee": float(row["quantite_utilisee"]),
+            "unite":        row["unite"],
+        } for row in batch]
 
-        print(f"    ↳ Nomenclature : {row['num_ordre']} nécessite {row['ref_matiere']} ({row['quantite_prevue']} {row['unite']})")
+        def writer(tx, d=data):
+            tx.run("""
+                UNWIND $rows AS row
+                MERGE (m:MatierePremiere {code: row.code})
+                ON CREATE SET m.note = 'Référencé depuis Production'
+                WITH m, row
+                MATCH (of:OrdreFabrication {id: row.of_id})
+                MERGE (of)-[r:NECESSITE]->(m)
+                SET r.quantite_prevue   = row.qte_prevue,
+                    r.quantite_utilisee = row.qte_utilisee,
+                    r.unite             = row.unite
+            """, rows=d)
+
+        session.execute_write(writer)
+        print(f"  [{min((idx+1)*BATCH, total):>6}/{total}]", end="\r", flush=True)
+
+    print(f"  [{total:>6}/{total}] ✓")
 
 
 # ─────────────────────────────────────────
@@ -122,17 +130,23 @@ if __name__ == "__main__":
     print("  Injection M4 - Service Production → Neo4j")
     print("=" * 50)
 
+    driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+
+    with driver.session(database="navalcraft") as s:
+        print("\n[0] Création des index Neo4j")
+        create_indexes(s)
+
     print("\n[1/2] Fichier : production_ordres.csv")
     with open(CSV_ORDRES, encoding="utf-8", newline="") as f:
         rows_ordres = list(csv.DictReader(f, delimiter=";"))
-    with driver.session() as s:
-        s.execute_write(inject_ordres, rows_ordres)
+    with driver.session(database="navalcraft") as s:
+        inject_ordres(s, rows_ordres)
 
     print("\n[2/2] Fichier : production_nomenclatures.csv")
     with open(CSV_NOMENCLATURES, encoding="utf-8", newline="") as f:
         rows_nomenclatures = list(csv.DictReader(f, delimiter=";"))
-    with driver.session() as s:
-        s.execute_write(inject_nomenclatures, rows_nomenclatures)
+    with driver.session(database="navalcraft") as s:
+        inject_nomenclatures(s, rows_nomenclatures)
 
     driver.close()
 
